@@ -5,6 +5,9 @@ import { cn } from "@/lib/utils";
 import { VideoDialogProvider } from "@/components/ui/VideoDialogContext";
 import VideoDialog from "@/components/ui/VideoDialog";
 
+import Header from "../components/Header";
+import Footer from '../components/Footer';
+
 import "@/styles.css";
 import { TailwindIndicator } from "@/components/ui/breakpoint-indicator";
 
@@ -25,8 +28,8 @@ const lato = Lato({
 });
 
 export const metadata: Metadata = {
-  title: "Tina",
-  description: "Tina Cloud Starter",
+  title: "Las Recetas de Magda",
+  description: "Descubre mis recetas más dulces y los secretos mejor guardados para hornear con amor.",
 };
 
 export default function RootLayout({
@@ -38,7 +41,11 @@ export default function RootLayout({
     <html lang="en" className={cn(fontSans.variable, nunito.variable, lato.variable)}>
       <body className="min-h-screen bg-background font-sans antialiased">
         <VideoDialogProvider>
+          
+          <Header />
           {children}
+          <Footer />
+          
           <VideoDialog />
         </VideoDialogProvider>
         <TailwindIndicator />
