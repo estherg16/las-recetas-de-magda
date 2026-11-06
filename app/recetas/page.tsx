@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import client from '../../tina/__generated__/client';
-import GaleriaRecetas from '../../components/GaleriaRecetas';
+import GaleriaRecetas from '../../components/recetas/GaleriaRecetas';
 
 export default async function PaginaRecetas() {
   const respuesta = await client.queries.recetaConnection();

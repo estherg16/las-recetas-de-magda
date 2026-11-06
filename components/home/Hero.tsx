@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import client from '../tina/__generated__/client';
+import client from '../../tina/__generated__/client';
 
 export default async function Hero() {
   // 1. Pedimos todas las recetas a TinaCMS

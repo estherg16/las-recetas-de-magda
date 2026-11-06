@@ -2,14 +2,11 @@ import React from "react";
 import { Metadata } from "next";
 import { Inter as FontSans, Lato, Nunito } from "next/font/google";
 import { cn } from "@/lib/utils";
-import { VideoDialogProvider } from "@/components/ui/VideoDialogContext";
-import VideoDialog from "@/components/ui/VideoDialog";
 
-import Header from "../components/Header";
-import Footer from '../components/Footer';
+import Header from "../components/layout/Header";
+import Footer from '../components/layout/Footer';
 
 import "@/styles.css";
-import { TailwindIndicator } from "@/components/ui/breakpoint-indicator";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -38,17 +35,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={cn(fontSans.variable, nunito.variable, lato.variable)}>
+    <html lang="es" className={cn(fontSans.variable, nunito.variable, lato.variable)}>
       <body className="min-h-screen bg-background font-sans antialiased">
-        <VideoDialogProvider>
-          
-          <Header />
-          {children}
-          <Footer />
-          
-          <VideoDialog />
-        </VideoDialogProvider>
-        <TailwindIndicator />
+        <Header />
+        {children}
+        <Footer />
       </body>
     </html>
   );

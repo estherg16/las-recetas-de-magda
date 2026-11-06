@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import TarjetaReceta from './TarjetaReceta';
-import client from '../tina/__generated__/client';
+import TarjetaReceta from '../recetas/TarjetaReceta';
+import client from '../../tina/__generated__/client';
 
 export default async function SeccionUltimasRecetas() {
   // 1. Pedimos todas las recetas a TinaCMS

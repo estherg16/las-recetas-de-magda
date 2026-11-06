@@ -1,6 +1,6 @@
 import { Facebook, Mail } from 'lucide-react';
 import Link from 'next/link';
-import client from '../tina/__generated__/client';
+import client from '../../tina/__generated__/client';
 
 export default async function PieDePagina() {
   const anioActual = new Date().getFullYear();

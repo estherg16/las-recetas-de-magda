@@ -1,5 +1,5 @@
-import Hero from '../components/Hero';
-import SeccionUltimasRecetas from '../components/SeccionUltimasRecetas';
+import Hero from '../components/home/Hero';
+import SeccionUltimasRecetas from '../components/home/SeccionUltimasRecetas';
 
 export default function Inicio() {
   return (

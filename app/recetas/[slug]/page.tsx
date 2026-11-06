@@ -1,5 +1,5 @@
 import client from '../../../tina/__generated__/client';
-import PlantillaReceta from '../../../components/PlantillaReceta';
+import PlantillaReceta from '../../../components/recetas/PlantillaReceta';
 
 export default async function PaginaRecetaIndividual({ params }: { params: Promise<{ slug: string }> }) {
   // 1. Esperamos a que los parámetros se resuelvan (Requisito de Next.js 15)
