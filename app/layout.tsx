@@ -27,6 +27,9 @@ const lato = Lato({
 export const metadata: Metadata = {
   title: "Las Recetas de Magda",
   description: "Descubre mis recetas más dulces y los secretos mejor guardados para hornear con amor.",
+  verification: {
+    google: "yIrcYGpwP9xDWpgKFJSXqokzNMWRc813GxtfbfZXhHE",
+  },
 };
 
 export default function RootLayout({
