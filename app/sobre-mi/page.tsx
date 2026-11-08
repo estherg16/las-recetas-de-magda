@@ -50,7 +50,7 @@ export default function SobreMi() {
           
           <div className="pt-4">
             <span className="font-bold text-xl text-primary block" style={{ fontFamily: 'Playfair Display, serif' }}>
-              Un abrazo,<br/>Magda
+              Un abrazo,<br/>Magda y Esther
             </span>
           </div>
         </div>
