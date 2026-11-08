@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import TarjetaReceta from './TarjetaReceta';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Search, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, RefreshCw, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
 import SelectorPersonalizado from '../ui/SelectorPersonalizado';
 
 export default function GaleriaRecetas({ recetas }: { recetas: any[] }) {
@@ -20,6 +20,9 @@ export default function GaleriaRecetas({ recetas }: { recetas: any[] }) {
   const [ordenActivo, setOrdenActivo] = useState('Recientes');
   const [anioActivo, setAnioActivo] = useState('Todos');
   const [metodoActivo, setMetodoActivo] = useState('Todos');
+  
+  // Nuevo estado para controlar la visibilidad de los filtros en móvil
+  const [filtrosVisibles, setFiltrosVisibles] = useState(false);
   
   const [paginaActual, setPaginaActual] = useState(1);
   const recetasPorPagina = 12;
@@ -140,7 +143,17 @@ export default function GaleriaRecetas({ recetas }: { recetas: any[] }) {
         </button>
       </div>
 
-      <div className="w-full bg-accent/10 border border-border/40 rounded-[2rem] p-6 lg:p-8 mb-12">
+      {/* BOTÓN MÓVIL PARA MOSTRAR FILTROS */}
+      <button
+        onClick={() => setFiltrosVisibles(!filtrosVisibles)}
+        className="lg:hidden w-full flex items-center justify-center gap-2 bg-secondary/10 text-secondary font-bold py-3 rounded-xl mb-4 border border-secondary/20 transition-colors"
+      >
+        <Filter size={18} />
+        {filtrosVisibles ? 'Ocultar filtros' : 'Mostrar filtros de búsqueda'}
+      </button>
+
+      {/* CONTENEDOR DE FILTROS (Oculto en móvil por defecto) */}
+      <div className={`w-full bg-accent/10 border border-border/40 rounded-[2rem] p-6 lg:p-8 mb-12 transition-all ${filtrosVisibles ? 'block' : 'hidden lg:block'}`}>
         <div className="flex flex-col lg:flex-row justify-between items-center gap-6 mb-8">
           <div className="flex flex-wrap justify-center lg:justify-start gap-2">
             {categorias.map((categoria, indice) => (

@@ -1,5 +1,6 @@
 import React from "react";
 import { Metadata } from "next";
+import { ThemeProvider } from "next-themes";
 import { Inter as FontSans, Lato, Nunito } from "next/font/google";
 import { cn } from "@/lib/utils";
 
@@ -7,6 +8,7 @@ import Header from "../components/layout/Header";
 import Footer from '../components/layout/Footer';
 
 import "@/styles.css";
+
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -40,9 +42,11 @@ export default function RootLayout({
   return (
     <html lang="es" className={cn(fontSans.variable, nunito.variable, lato.variable)}>
       <body className="min-h-screen bg-background font-sans antialiased">
-        <Header />
-        {children}
-        <Footer />
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <Header />
+          {children}
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );

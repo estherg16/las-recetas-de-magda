@@ -15,11 +15,11 @@ export default function SobreMi() {
         </h1>
       </header>
 
-      {/* Grid Editorial: 7 columnas para texto, 5 para imágenes */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-20 items-start">
+      {/* Grid Editorial: 7 columnas para texto, 5 para imágenes (solo en pantallas grandes) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
         
         {/* Columna Izquierda: Texto Editorial */}
-        <div className="md:col-span-7 space-y-8 text-lg text-muted-foreground leading-relaxed">
+        <div className="lg:col-span-7 space-y-8 text-lg text-muted-foreground leading-relaxed">
           
           <p>
             ¡Hola! Soy Magda, la persona detrás de los fogones de este blog. La cocina siempre ha sido para mí mucho más que un pasatiempo: es mi forma favorita de compartir amor con los que más quiero. Todo esto empezó con las tartas y dulces que preparaba para los cumpleaños de mi familia y amigos. Como siempre me acababan pidiendo las recetas, pensé que ya era hora de pasar mis viejos cuadernos de notas a un espacio digital al que todos pudierais acceder.
@@ -56,7 +56,7 @@ export default function SobreMi() {
         </div>
 
         {/* Columna Derecha: Composición asimétrica de imágenes */}
-        <div className="md:col-span-5 relative mt-10 md:mt-0">
+        <div className="lg:col-span-5 relative mt-10 lg:mt-0">
           {/* Imagen Principal */}
           <div className="relative w-full aspect-[3/4] rounded-2xl overflow-hidden shadow-lg border border-border/40 z-10">
             <Image 
@@ -68,7 +68,7 @@ export default function SobreMi() {
           </div>
           
           {/* Imagen Secundaria Superpuesta (Flotando abajo a la izquierda) */}
-          <div className="absolute -bottom-12 -left-12 w-48 h-48 rounded-full overflow-hidden shadow-xl border-4 border-background z-20 hidden md:block">
+          <div className="absolute -bottom-12 -left-12 w-48 h-48 rounded-full overflow-hidden shadow-xl border-4 border-background z-20 hidden lg:block">
             <Image 
               src="/images/logo.jpg" 
               alt="Detalle de ingredientes" 
