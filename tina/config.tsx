@@ -90,6 +90,11 @@ export default defineConfig({
             required: true,
           },
           {
+            type: "boolean",
+            name: "favorita",
+            label: "¿Es de las que más nos gustan?",
+          },
+          {
             type: "string",
             name: "metodos_preparacion",
             label: "Métodos de preparación",

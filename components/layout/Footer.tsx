@@ -8,20 +8,15 @@ export default async function PieDePagina() {
   // Pedimos todas las recetas a TinaCMS
   const respuesta = await client.queries.recetaConnection();
   
-  // Limpiamos los datos, los ordenamos de más reciente a más antigua y nos quedamos con las 3 primeras
-  const recetasFooter = respuesta.data.recetaConnection.edges
+  // Limpiamos los datos, filtramos por la casilla "favorita" y nos quedamos con las 3 primeras
+  const recetasFavoritas = respuesta.data.recetaConnection.edges
     ?.map((borde) => borde?.node)
-    .filter((nodo) => nodo)
-    .sort((a, b) => {
-      const fechaA = a?.fecha ? new Date(a.fecha).getTime() : 0;
-      const fechaB = b?.fecha ? new Date(b.fecha).getTime() : 0;
-      return fechaB - fechaA;
-    })
-    .slice(0, 3) || [];
+    .filter((nodo) => nodo?.favorita === true)
+    .slice(0, 5) || [];
 
   return (
     <footer className="bg-card border-t border-border/60 pt-16 pb-6 mt-16">
-      {/* Contenedor ancho estilo Buscando a Tropi */}
+      {/* Contenedor ancho */}
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
         
         {/* Columna 1: Marca y Contacto */}
@@ -42,10 +37,10 @@ export default async function PieDePagina() {
           </p>
           
           <div className="flex items-center gap-3 mt-2">
-            <a href="https://www.facebook.com/LasRecetasDeMagda/" target="_blank" aria-label="Facebook" className="w-10 h-10 flex items-center justify-center rounded-full bg-muted text-primary hover:bg-secondary hover:text-white transition-all">
+            <a href="https://www.facebook.com/LasRecetasDeMagda/" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="w-10 h-10 flex items-center justify-center rounded-full bg-muted text-primary hover:bg-secondary hover:text-white transition-all">
               <Facebook className="w-5 h-5" />
             </a>
-            <a href="mailto:magdadumo@gmail.com" target="_blank" aria-label="Correo de contacto" className="w-10 h-10 flex items-center justify-center rounded-full bg-muted text-primary hover:bg-secondary hover:text-white transition-all">
+            <a href="mailto:lasrecetasdemagda13@gmail.com" target="_blank" rel="noopener noreferrer" aria-label="Correo de contacto" className="w-10 h-10 flex items-center justify-center rounded-full bg-muted text-primary hover:bg-secondary hover:text-white transition-all">
               <Mail className="w-5 h-5" />
             </a>
           </div>
@@ -60,16 +55,17 @@ export default async function PieDePagina() {
             <li><Link href="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">Inicio</Link></li>
             <li><Link href="/recetas" className="text-sm text-muted-foreground hover:text-primary transition-colors">Todas las recetas</Link></li>
             <li><Link href="/sobre-mi" className="text-sm text-muted-foreground hover:text-primary transition-colors">Sobre mí</Link></li>
+            <li><a href="https://crochetmagda.blogspot.com" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary transition-colors">Crochet Magda</a></li>
           </ul>
         </div>
 
-        {/* Columna 3: Últimas recetas */}
+        {/* Columna 3: Las que más nos gustan */}
         <div className="flex flex-col gap-4">
           <h3 className="font-bold text-primary uppercase tracking-wider text-sm" style={{ fontFamily: 'Playfair Display, serif' }}>
-            Últimas recetas
+            Las que más nos gustan
           </h3>
           <ul className="flex flex-col gap-3">
-            {recetasFooter.map((receta, indice) => (
+            {recetasFavoritas.map((receta, indice) => (
               <li key={indice}>
                 <Link href={`/recetas/${receta?._sys.filename}`} className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
                   <span className="text-secondary/70 text-lg leading-none">&rsaquo;</span>
@@ -77,8 +73,8 @@ export default async function PieDePagina() {
                 </Link>
               </li>
             ))}
-            {recetasFooter.length === 0 && (
-              <li className="text-sm text-muted-foreground italic">Aún no hay recetas publicadas</li>
+            {recetasFavoritas.length === 0 && (
+              <li className="text-sm text-muted-foreground italic">Aún no hay recetas destacadas</li>
             )}
           </ul>
         </div>

@@ -90,3 +90,10 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .dark .prose strong {
+    color: var(--color-secondary) !important; /* Usa el rosa empolvado para que destaque */
+    font-weight: 700;
+  }
+}

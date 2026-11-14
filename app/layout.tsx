@@ -40,7 +40,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" className={cn(fontSans.variable, nunito.variable, lato.variable)}>
+    <html lang="es" suppressHydrationWarning className={cn(fontSans.variable, nunito.variable, lato.variable)}>
       <body className="min-h-screen bg-background font-sans antialiased">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Header />
