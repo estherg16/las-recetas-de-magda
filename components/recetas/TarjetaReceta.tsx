@@ -10,7 +10,12 @@ export default function TarjetaReceta({ receta }: { receta: any }) {
   return (
     <div className="bg-card rounded-2xl overflow-hidden shadow-sm border border-border/40 hover:shadow-md transition-shadow h-full flex flex-col group">
       <div className="relative h-48 w-full overflow-hidden">
-        <Image src={receta?.imagen} alt={receta?.titulo} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+        <Image 
+          src={receta?.imagen || '/images/receta-por-defecto.jpg'} 
+          alt={receta?.titulo || 'Receta de Magda'} 
+          fill 
+          className="object-cover group-hover:scale-105 transition-transform duration-500" 
+        />
       </div>
       <div className="p-5 flex flex-col flex-grow">
         

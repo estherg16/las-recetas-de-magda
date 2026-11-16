@@ -113,7 +113,7 @@ export default defineConfig({
             type: "image",
             name: "imagen",
             label: "Foto principal (Portada)",
-            required: true,
+            required: false,
           },
           {
             type: "string",

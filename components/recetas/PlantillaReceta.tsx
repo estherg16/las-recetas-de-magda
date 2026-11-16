@@ -98,8 +98,8 @@ export default function PlantillaReceta({ receta }: { receta: any }) {
 
         <div className="relative w-full max-w-2xl aspect-[4/3] rounded-[2rem] overflow-hidden shadow-sm border border-border/40">
           <Image 
-            src={receta.imagen} 
-            alt={receta.titulo} 
+            src={receta.imagen || '/images/receta-por-defecto.jpg'} 
+            alt={receta.titulo || 'Receta de Magda'} 
             fill
             className="object-cover"
             priority
@@ -194,7 +194,7 @@ export default function PlantillaReceta({ receta }: { receta: any }) {
       </div>
 
         {receta.url_inspiracion && receta.url_inspiracion.length > 0 && (
-          <div className="mt-12 pt-8 border-t border-border/40 flex flex-col items-center gap-3">
+          <div className="mt-12 pt-8 border-t border-border/40 flex flex-col items-center gap-3 w-full max-w-2xl mx-auto text-center">
             <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">
               Fuentes de inspiración:
             </span>
@@ -204,10 +204,12 @@ export default function PlantillaReceta({ receta }: { receta: any }) {
                 href={url} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm font-medium text-secondary hover:text-primary transition-colors"
+                className="inline-flex items-start sm:items-center justify-center gap-2 text-sm font-medium text-secondary hover:text-primary transition-colors max-w-full px-2"
               >
-                <ExternalLink size={16} />
-                {url.replace(/^https?:\/\/(www\.)?/, '')}
+                <ExternalLink size={16} className="shrink-0 mt-0.5 sm:mt-0" />
+                <span className="break-all text-left sm:text-center">
+                  {url.replace(/^https?:\/\/(www\.)?/, '')}
+                </span>
               </a>
             ))}
           </div>

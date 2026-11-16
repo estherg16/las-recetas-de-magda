@@ -20,24 +20,63 @@ export default function GaleriaRecetas({ recetas }: { recetas: any[] }) {
   const [ordenActivo, setOrdenActivo] = useState('Recientes');
   const [anioActivo, setAnioActivo] = useState('Todos');
   const [metodoActivo, setMetodoActivo] = useState('Todos');
-  
-  // Nuevo estado para controlar la visibilidad de los filtros en móvil
   const [filtrosVisibles, setFiltrosVisibles] = useState(false);
-  
   const [paginaActual, setPaginaActual] = useState(1);
+  const [cargadoDesdeMemoria, setCargadoDesdeMemoria] = useState(false);
+  
   const recetasPorPagina = 12;
 
+  // 1. Recuperar filtros guardados al entrar o aplicar búsqueda desde URL
   useEffect(() => {
     const q = searchParams.get('q');
     if (q) {
       setTextoBusqueda(q);
+      setPaginaActual(1);
       router.replace('/recetas', { scroll: false });
+      setCargadoDesdeMemoria(true);
+      return;
     }
+
+    const guardados = sessionStorage.getItem('filtrosRecetasMagda');
+    if (guardados) {
+      try {
+        const datos = JSON.parse(guardados);
+        if (datos.textoBusqueda !== undefined) setTextoBusqueda(datos.textoBusqueda);
+        if (datos.categoriaActiva) setCategoriaActiva(datos.categoriaActiva);
+        if (datos.dificultadActiva) setDificultadActiva(datos.dificultadActiva);
+        if (datos.ordenActivo) setOrdenActivo(datos.ordenActivo);
+        if (datos.anioActivo) setAnioActivo(datos.anioActivo);
+        if (datos.metodoActivo) setMetodoActivo(datos.metodoActivo);
+        if (datos.paginaActual) setPaginaActual(datos.paginaActual);
+      } catch (e) {
+        console.error('Error leyendo filtros guardados', e);
+      }
+    }
+    setCargadoDesdeMemoria(true);
   }, [searchParams, router]);
 
+  // 2. Guardar cualquier cambio en sessionStorage una vez inicializado
   useEffect(() => {
+    if (!cargadoDesdeMemoria) return;
+    sessionStorage.setItem(
+      'filtrosRecetasMagda',
+      JSON.stringify({
+        textoBusqueda,
+        categoriaActiva,
+        dificultadActiva,
+        ordenActivo,
+        anioActivo,
+        metodoActivo,
+        paginaActual,
+      })
+    );
+  }, [textoBusqueda, categoriaActiva, dificultadActiva, ordenActivo, anioActivo, metodoActivo, paginaActual, cargadoDesdeMemoria]);
+
+  // Wrapper para resetear a la página 1 solo cuando el usuario cambia un filtro
+  const actualizarFiltro = (setter: (val: string) => void) => (valor: string) => {
+    setter(valor);
     setPaginaActual(1);
-  }, [textoBusqueda, categoriaActiva, dificultadActiva, ordenActivo, anioActivo, metodoActivo]);
+  };
 
   const categoriasUnicas = Array.from(new Set(recetas.map(r => r.categoria))).filter(Boolean);
   const categorias = ['Todas', ...categoriasUnicas];
@@ -80,6 +119,7 @@ export default function GaleriaRecetas({ recetas }: { recetas: any[] }) {
     setAnioActivo('Todos');
     setMetodoActivo('Todos');
     setPaginaActual(1);
+    sessionStorage.removeItem('filtrosRecetasMagda');
   };
 
   // Función para cambiar de página y hacer scroll arriba
@@ -94,7 +134,7 @@ export default function GaleriaRecetas({ recetas }: { recetas: any[] }) {
     { valor: 'Todas', etiqueta: 'Todas las dificultades' },
     { valor: 'Fácil', etiqueta: 'Fácil' },
     { valor: 'Media', etiqueta: 'Media' },
-    { valor: 'Difícil', etiqueta: 'Difícil' }
+    { valor: 'Alta', etiqueta: 'Alta' }
   ];
 
   const opcionesAnio = [
@@ -134,7 +174,7 @@ export default function GaleriaRecetas({ recetas }: { recetas: any[] }) {
           type="text" 
           placeholder="Buscar receta..."
           value={textoBusqueda}
-          onChange={(e) => setTextoBusqueda(e.target.value)}
+          onChange={(e) => actualizarFiltro(setTextoBusqueda)(e.target.value)}
           className="w-full bg-card border-2 border-border/60 text-foreground rounded-full pl-14 pr-32 py-4 shadow-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
         />
         <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
@@ -159,7 +199,7 @@ export default function GaleriaRecetas({ recetas }: { recetas: any[] }) {
             {categorias.map((categoria, indice) => (
               <button
                 key={indice}
-                onClick={() => setCategoriaActiva(categoria)}
+                onClick={() => actualizarFiltro(setCategoriaActiva)(categoria)}
                 className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 border ${
                   categoriaActiva === categoria
                     ? 'bg-primary text-primary-foreground border-primary shadow-md'
@@ -177,10 +217,10 @@ export default function GaleriaRecetas({ recetas }: { recetas: any[] }) {
 
         <div className="flex flex-col lg:flex-row items-end justify-between gap-6 pt-6 border-t border-border/40">
           <div className="flex flex-wrap gap-6 w-full lg:w-auto">
-            <SelectorPersonalizado label="Nivel de técnica" valor={dificultadActiva} opciones={opcionesDificultad} onChange={setDificultadActiva} />
-            <SelectorPersonalizado label="Año" valor={anioActivo} opciones={opcionesAnio} onChange={setAnioActivo} />
-            <SelectorPersonalizado label="Preparación" valor={metodoActivo} opciones={opcionesMetodo} onChange={setMetodoActivo} />
-            <SelectorPersonalizado label="Ordenar por" valor={ordenActivo} opciones={opcionesOrden} onChange={setOrdenActivo} />
+            <SelectorPersonalizado label="Nivel de técnica" valor={dificultadActiva} opciones={opcionesDificultad} onChange={actualizarFiltro(setDificultadActiva)} />
+            <SelectorPersonalizado label="Año" valor={anioActivo} opciones={opcionesAnio} onChange={actualizarFiltro(setAnioActivo)} />
+            <SelectorPersonalizado label="Preparación" valor={metodoActivo} opciones={opcionesMetodo} onChange={actualizarFiltro(setMetodoActivo)} />
+            <SelectorPersonalizado label="Ordenar por" valor={ordenActivo} opciones={opcionesOrden} onChange={actualizarFiltro(setOrdenActivo)} />
           </div>
 
           <button onClick={limpiarFiltros} className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-muted-foreground border border-border/60 bg-background hover:text-secondary hover:border-secondary transition-all w-full lg:w-auto mt-4 lg:mt-0">
