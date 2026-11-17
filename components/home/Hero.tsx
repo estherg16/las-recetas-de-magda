@@ -4,7 +4,9 @@ import client from '../../tina/__generated__/client';
 
 export default async function Hero() {
   // 1. Pedimos todas las recetas a TinaCMS
-  const respuesta = await client.queries.recetaConnection();
+  const respuesta = await client.queries.recetaConnection({
+    first: 500, // Ampliamos el límite por defecto de 50 a 500 recetas
+  });
   
   // 2. Extraemos los datos, filtramos nulos y ordenamos de más reciente a más antigua
   const todasLasRecetas = respuesta.data.recetaConnection.edges

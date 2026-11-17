@@ -6,7 +6,9 @@ export default async function PieDePagina() {
   const anioActual = new Date().getFullYear();
   
   // Pedimos todas las recetas a TinaCMS
-  const respuesta = await client.queries.recetaConnection();
+  const respuesta = await client.queries.recetaConnection({
+    first: 500, // Ampliamos el límite por defecto de 50 a 500 recetas
+  });
   
   // Limpiamos los datos, filtramos por la casilla "favorita" y nos quedamos con las 3 primeras
   const recetasFavoritas = respuesta.data.recetaConnection.edges

@@ -30,7 +30,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let rutasDinamicas: MetadataRoute.Sitemap = [];
   
   try {
-    const respuesta = await client.queries.recetaConnection();
+    const respuesta = await client.queries.recetaConnection({
+      first: 500, // Ampliamos el límite por defecto de 50 a 500 recetas
+    });
     const recetas = respuesta.data.recetaConnection.edges
       ?.map((borde) => borde?.node)
       .filter((nodo) => nodo) || [];
