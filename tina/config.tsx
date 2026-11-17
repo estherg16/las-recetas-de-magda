@@ -85,7 +85,8 @@ export default defineConfig({
               { value: "Recetas Infantiles", label: "Recetas Infantiles" },
               { value: "Aperitivos y Canapés", label: "Aperitivos y Canapés" }, 
               { value: "Platos Salados", label: "Platos Salados" }, 
-              { value: "Masas y Básicos", label: "Masas y Básicos" } 
+              { value: "Masas y Básicos", label: "Masas y Básicos" },
+              { value: "Salsas", label: "Salsas" } 
             ],
             required: true,
           },
@@ -112,7 +113,7 @@ export default defineConfig({
             type: "image",
             name: "imagen",
             label: "Foto principal (Portada)",
-            required: true,
+            required: false,
           },
           {
             type: "string",

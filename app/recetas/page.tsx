@@ -3,7 +3,9 @@ import client from '../../tina/__generated__/client';
 import GaleriaRecetas from '../../components/recetas/GaleriaRecetas';
 
 export default async function PaginaRecetas() {
-  const respuesta = await client.queries.recetaConnection();
+  const respuesta = await client.queries.recetaConnection({
+    first: 500, // Ampliamos el límite por defecto de 50 a 500 recetas
+  });
   
   const todasLasRecetas = respuesta.data.recetaConnection.edges
     ?.map((borde) => borde?.node)

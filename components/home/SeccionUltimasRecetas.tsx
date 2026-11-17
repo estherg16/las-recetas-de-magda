@@ -5,7 +5,9 @@ import client from '../../tina/__generated__/client';
 
 export default async function SeccionUltimasRecetas() {
   // 1. Pedimos todas las recetas a TinaCMS
-  const respuesta = await client.queries.recetaConnection();
+  const respuesta = await client.queries.recetaConnection({
+    first: 500, // Ampliamos el límite por defecto de 50 a 500 recetas
+  });
   
   // 2. Limpiamos los datos, los ordenamos de más reciente a más antigua y cogemos desde la segunda hasta la quinta
   const ultimasRecetas = respuesta.data.recetaConnection.edges

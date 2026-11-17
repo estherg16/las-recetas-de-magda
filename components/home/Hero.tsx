@@ -4,7 +4,9 @@ import client from '../../tina/__generated__/client';
 
 export default async function Hero() {
   // 1. Pedimos todas las recetas a TinaCMS
-  const respuesta = await client.queries.recetaConnection();
+  const respuesta = await client.queries.recetaConnection({
+    first: 500, // Ampliamos el límite por defecto de 50 a 500 recetas
+  });
   
   // 2. Extraemos los datos, filtramos nulos y ordenamos de más reciente a más antigua
   const todasLasRecetas = respuesta.data.recetaConnection.edges
@@ -57,8 +59,8 @@ export default async function Hero() {
       {/* Columna Derecha: La foto espectacular */}
       <div className="flex-1 w-full relative min-h-[300px] h-[300px] md:h-[450px] rounded-2xl md:rounded-[2rem] overflow-hidden shadow-xl mt-6 md:mt-0">
         <Image 
-          src={recetaPrincipal.imagen} 
-          alt={recetaPrincipal.titulo}
+          src={recetaPrincipal.imagen || '/images/receta-por-defecto.jpg'} 
+          alt={recetaPrincipal.titulo || 'Última receta de Magda'}
           fill
           className="object-cover hover:scale-105 transition-transform duration-700"
           priority
