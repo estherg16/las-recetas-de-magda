@@ -21,6 +21,14 @@ export default defineConfig({
       publicFolder: "public",
     },
   },
+  search: {
+    tina: {
+      indexerToken: process.env.TINA_SEARCH_TOKEN || "local-search-token",
+      stopwordLanguages: ["spa"],
+    },
+    indexBatchSize: 100,
+    maxSearchIndexFieldLength: 100,
+  },
   // Aquí definimos la estructura de la base de datos
   schema: {
     collections: [
@@ -78,8 +86,11 @@ export default defineConfig({
             label: "Categoría principal",
             options: [
               { value: "Aperitivos y Canapés", label: "Aperitivos y Canapés" }, 
+              { value: "Arroces y Pastas", label: "Arroces y Pastas" }, 
               { value: "Bizcochos", label: "Bizcochos" },
+              { value: "Carnes y Pescados", label: "Carnes y Pescados" },
               { value: "Galletas", label: "Galletas" },
+              { value: "Helados y sorbetes", label: "Helados y sorbetes" },
               { value: "Magdalenas y Bollería", label: "Magdalenas y Bollería" },
               { value: "Masas y Básicos", label: "Masas y Básicos" },
               { value: "Platos Salados", label: "Platos Salados" }, 
@@ -87,6 +98,7 @@ export default defineConfig({
               { value: "Recetas Infantiles", label: "Recetas Infantiles" },
               { value: "Salsas", label: "Salsas" },
               { value: "Tartas y Pasteles", label: "Tartas y Pasteles" },
+              { value: "Verduras y Legumbres", label: "Verduras y Legumbres" },
             ],
             required: true,
           },
