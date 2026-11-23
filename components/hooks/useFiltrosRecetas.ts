@@ -4,23 +4,17 @@ import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 export const RECETAS_POR_PAGINA = 12;
-const STORAGE_KEY = 'filtrosRecetasMagda';
+const STORAGE_KEY = 'filtrosRecetasMagda_v2';
 
-export const OPCIONES_DIFICULTAD = [
-  { valor: 'Todas', etiqueta: 'Todas las dificultades' },
-  { valor: 'Fácil', etiqueta: 'Fácil' },
-  { valor: 'Media', etiqueta: 'Media' },
-  { valor: 'Alta', etiqueta: 'Alta' },
-];
+export const OPCIONES_DIFICULTAD = ['Fácil', 'Media', 'Alta'];
 
 export const OPCIONES_METODO = [
-  { valor: 'Todos', etiqueta: 'Cualquier método' },
-  { valor: 'Thermomix', etiqueta: 'Thermomix' },
-  { valor: 'Horno', etiqueta: 'Horno' },
-  { valor: 'Sin horno', etiqueta: 'Sin horno' },
-  { valor: 'Freidora de aire', etiqueta: 'Freidora de aire' },
-  { valor: 'Microondas', etiqueta: 'Microondas' },
-  { valor: 'Navidad', etiqueta: 'Navidad' },
+  'Thermomix',
+  'Horno',
+  'Sin horno',
+  'Freidora de aire',
+  'Microondas',
+  'Navidad',
 ];
 
 export const OPCIONES_ORDEN = [
@@ -28,15 +22,31 @@ export const OPCIONES_ORDEN = [
   { valor: 'Antiguas', etiqueta: 'Más antiguas primero' },
 ];
 
-const FILTROS_INICIALES = {
+export interface EstadoFiltros {
+  textoBusqueda: string;
+  categoriasActivas: string[];
+  dificultadesActivas: string[];
+  aniosActivos: string[];
+  metodosActivos: string[];
+  ordenActivo: string;
+  paginaActual: number;
+}
+
+const FILTROS_INICIALES: EstadoFiltros = {
   textoBusqueda: '',
-  categoriaActiva: 'Todas',
-  dificultadActiva: 'Todas',
+  categoriasActivas: [],
+  dificultadesActivas: [],
+  aniosActivos: [],
+  metodosActivos: [],
   ordenActivo: 'Recientes',
-  anioActivo: 'Todos',
-  metodoActivo: 'Todos',
   paginaActual: 1,
 };
+
+type CampoArrayFiltro =
+  | 'categoriasActivas'
+  | 'dificultadesActivas'
+  | 'aniosActivos'
+  | 'metodosActivos';
 
 const normalizarTexto = (texto?: string) => {
   if (!texto) return '';
@@ -50,7 +60,7 @@ export function useFiltrosRecetas(recetas: any[]) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const [filtros, setFiltros] = useState(FILTROS_INICIALES);
+  const [filtros, setFiltros] = useState<EstadoFiltros>(FILTROS_INICIALES);
   const [cargadoDesdeMemoria, setCargadoDesdeMemoria] = useState(false);
 
   // 1. Recuperar filtros de URL o sessionStorage al montar
@@ -66,7 +76,15 @@ export function useFiltrosRecetas(recetas: any[]) {
     const guardados = sessionStorage.getItem(STORAGE_KEY);
     if (guardados) {
       try {
-        setFiltros((prev) => ({ ...prev, ...JSON.parse(guardados) }));
+        const parsed = JSON.parse(guardados);
+        setFiltros((prev) => ({
+          ...prev,
+          ...parsed,
+          categoriasActivas: Array.isArray(parsed.categoriasActivas) ? parsed.categoriasActivas : [],
+          dificultadesActivas: Array.isArray(parsed.dificultadesActivas) ? parsed.dificultadesActivas : [],
+          aniosActivos: Array.isArray(parsed.aniosActivos) ? parsed.aniosActivos : [],
+          metodosActivos: Array.isArray(parsed.metodosActivos) ? parsed.metodosActivos : [],
+        }));
       } catch (e) {
         console.error('Error leyendo filtros guardados', e);
       }
@@ -80,7 +98,25 @@ export function useFiltrosRecetas(recetas: any[]) {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(filtros));
   }, [filtros, cargadoDesdeMemoria]);
 
-  const actualizarFiltro = (campo: keyof typeof FILTROS_INICIALES) => (valor: string) => {
+  // Alternar un elemento dentro de un filtro múltiple (añadir o quitar)
+  const toggleFiltroMultiple = (campo: CampoArrayFiltro, valor: string) => {
+    setFiltros((prev) => {
+      const listaActual = prev[campo];
+      const yaExiste = listaActual.includes(valor);
+      const nuevaLista = yaExiste
+        ? listaActual.filter((item) => item !== valor)
+        : [...listaActual, valor];
+
+      return {
+        ...prev,
+        [campo]: nuevaLista,
+        paginaActual: 1,
+      };
+    });
+  };
+
+  // Actualizar campos simples (textoBusqueda u ordenActivo)
+  const actualizarFiltroSimple = (campo: 'textoBusqueda' | 'ordenActivo') => (valor: string) => {
     setFiltros((prev) => ({
       ...prev,
       [campo]: valor,
@@ -97,28 +133,49 @@ export function useFiltrosRecetas(recetas: any[]) {
     setFiltros((prev) => ({ ...prev, paginaActual: nuevaPagina }));
   };
 
-  // 3. Categorías y años dinámicos
-  const { categorias, opcionesAnio } = useMemo(() => {
-    const cats = Array.from(new Set(recetas.map((r) => r.categoria)))
-      .filter(Boolean)
-      .sort((a, b) => String(a).localeCompare(String(b), 'es'));
+  // 3. Listas dinámicas y conteos totales por opción
+  const {
+    categorias,
+    anios,
+    conteoCategorias,
+    conteoDificultades,
+    conteoAnios,
+    conteoMetodos,
+  } = useMemo(() => {
+    const cCats: Record<string, number> = {};
+    const cDifs: Record<string, number> = {};
+    const cAnios: Record<string, number> = {};
+    const cMets: Record<string, number> = {};
 
-    const anios = Array.from(
-      new Set(recetas.map((r) => (r.fecha ? new Date(r.fecha).getFullYear().toString() : '')))
-    )
-      .filter(Boolean)
-      .sort((a, b) => Number(b) - Number(a));
+    recetas.forEach((r) => {
+      if (r.categoria) {
+        cCats[r.categoria] = (cCats[r.categoria] || 0) + 1;
+      }
+      if (r.dificultad) {
+        cDifs[r.dificultad] = (cDifs[r.dificultad] || 0) + 1;
+      }
+      if (r.fecha) {
+        const anio = new Date(r.fecha).getFullYear().toString();
+        cAnios[anio] = (cAnios[anio] || 0) + 1;
+      }
+      if (Array.isArray(r.metodos_preparacion)) {
+        r.metodos_preparacion.forEach((m: string) => {
+          cMets[m] = (cMets[m] || 0) + 1;
+        });
+      }
+    });
 
     return {
-      categorias: ['Todas', ...cats],
-      opcionesAnio: [
-        { valor: 'Todos', etiqueta: 'Cualquier año' },
-        ...anios.map((a) => ({ valor: String(a), etiqueta: String(a) })),
-      ],
+      categorias: Object.keys(cCats).sort((a, b) => a.localeCompare(b, 'es')),
+      anios: Object.keys(cAnios).sort((a, b) => Number(b) - Number(a)),
+      conteoCategorias: cCats,
+      conteoDificultades: cDifs,
+      conteoAnios: cAnios,
+      conteoMetodos: cMets,
     };
   }, [recetas]);
 
-  // 4. Filtrado y ordenación
+  // 4. Filtrado múltiple y ordenación
   const recetasFiltradas = useMemo(() => {
     const busqueda = normalizarTexto(filtros.textoBusqueda);
 
@@ -131,15 +188,20 @@ export function useFiltrosRecetas(recetas: any[]) {
           receta.metodos_preparacion?.some((m: string) => normalizarTexto(m).includes(busqueda));
 
         const coincideCategoria =
-          filtros.categoriaActiva === 'Todas' || receta.categoria === filtros.categoriaActiva;
+          filtros.categoriasActivas.length === 0 ||
+          filtros.categoriasActivas.includes(receta.categoria);
+
         const coincideDificultad =
-          filtros.dificultadActiva === 'Todas' || receta.dificultad === filtros.dificultadActiva;
+          filtros.dificultadesActivas.length === 0 ||
+          filtros.dificultadesActivas.includes(receta.dificultad);
+
+        const anioReceta = receta.fecha ? new Date(receta.fecha).getFullYear().toString() : '';
         const coincideAnio =
-          filtros.anioActivo === 'Todos' ||
-          (receta.fecha && new Date(receta.fecha).getFullYear().toString() === filtros.anioActivo);
+          filtros.aniosActivos.length === 0 || filtros.aniosActivos.includes(anioReceta);
+
         const coincideMetodo =
-          filtros.metodoActivo === 'Todos' ||
-          receta.metodos_preparacion?.includes(filtros.metodoActivo);
+          filtros.metodosActivos.length === 0 ||
+          receta.metodos_preparacion?.some((m: string) => filtros.metodosActivos.includes(m));
 
         return (
           coincideBusqueda &&
@@ -175,11 +237,16 @@ export function useFiltrosRecetas(recetas: any[]) {
 
   return {
     filtros,
-    actualizarFiltro,
+    toggleFiltroMultiple,
+    actualizarFiltroSimple,
     limpiarFiltros,
     cambiarPagina,
     categorias,
-    opcionesAnio,
+    anios,
+    conteoCategorias,
+    conteoDificultades,
+    conteoAnios,
+    conteoMetodos,
     recetasFiltradas,
     recetasPaginadas,
     totalPaginas,
